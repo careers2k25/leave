@@ -444,7 +444,14 @@
             const formData = new FormData(this);
             const submitBtn = document.getElementById('submit-btn');
 
-            // Update submission time
+            // Update hidden fields before submission
+            document.getElementById('request-date').value = new Date().toLocaleDateString('en-GB');
+            document.getElementById('submission-time').value = new Date().toLocaleString();
+
+            // Ensure leave type and duration are set in FormData
+            formData.set('leave-type', leaveTypeInput.value);
+            formData.set('duration', durationInput.value);
+            formData.set('request-date', new Date().toLocaleDateString('en-GB'));
             formData.set('submission-time', new Date().toLocaleString());
 
             // Show loading state
