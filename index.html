@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Leave Portal</title>
+    <title>Employee Leave Request Portal</title>
     <style>
         * {
             margin: 0;
@@ -50,13 +49,6 @@
             padding: 32px 24px;
         }
 
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 20px;
-        }
-
         .form-group {
             margin-bottom: 24px;
         }
@@ -67,6 +59,29 @@
             font-weight: 500;
             color: #374151;
             margin-bottom: 12px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            color: #1f2937;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
         }
 
         .leave-type-options {
@@ -95,22 +110,6 @@
             border-color: #10b981;
             background: #10b981;
             color: white;
-        }
-
-        .leave-option.selected.sick {
-            background: #10b981;
-        }
-
-        .leave-option.selected.casual {
-            background: #6b7280;
-        }
-
-        .leave-option.selected.earned {
-            background: #f59e0b;
-        }
-
-        .leave-option.selected.other {
-            background: #8b5cf6;
         }
 
         .leave-icon {
@@ -153,29 +152,6 @@
             border-color: #6366f1;
             background: #6366f1;
             color: white;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 16px;
-            color: #1f2937;
-            background: white;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
-            font-family: inherit;
         }
 
         .submit-button {
@@ -230,7 +206,7 @@
             text-align: center;
         }
 
-        .hidden-fields {
+        #end-date-group {
             display: none;
         }
 
@@ -251,7 +227,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="header">
@@ -270,78 +245,73 @@
 
             <form name="leave-request" method="POST" data-netlify="true" data-netlify-recaptcha="true" id="leaveForm">
                 <input type="hidden" name="form-name" value="leave-request" />
-
+                
                 <!-- Employee Information -->
                 <div class="form-group">
                     <label class="form-label">Employee Name</label>
-                    <input type="text" name="employee-name" class="form-input" placeholder="Enter your full name"
-                        required>
+                    <input type="text" name="employee-name" class="form-input" placeholder="Enter your full name" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Employee ID</label>
-                    <input type="text" name="employee-id" class="form-input" placeholder="Enter your employee ID"
-                        required>
+                    <input type="text" name="employee-id" class="form-input" placeholder="Enter your employee ID" required>
                 </div>
 
                 <!-- Leave Type -->
                 <div class="form-group">
                     <label class="form-label">Leave Type</label>
                     <div class="leave-type-options">
-                        <div class="leave-option" data-value="Sick Leave">
+                        <div class="leave-option" onclick="selectLeaveType('Sick Leave', this)">
                             <span class="leave-icon">🤒</span>
                             <span class="leave-text">Sick Leave</span>
                         </div>
-                        <div class="leave-option" data-value="Casual Leave">
+                        <div class="leave-option" onclick="selectLeaveType('Casual Leave', this)">
                             <span class="leave-icon">📋</span>
                             <span class="leave-text">Casual Leave</span>
                         </div>
-                        <div class="leave-option" data-value="Earned Leave">
+                        <div class="leave-option" onclick="selectLeaveType('Earned Leave', this)">
                             <span class="leave-icon">🏆</span>
                             <span class="leave-text">Earned Leave</span>
                         </div>
-                        <div class="leave-option" data-value="Other">
+                        <div class="leave-option" onclick="selectLeaveType('Other', this)">
                             <span class="leave-icon">✏️</span>
                             <span class="leave-text">Other</span>
                         </div>
                     </div>
+                    <input type="hidden" name="leave-type" id="leave-type-hidden" required>
                 </div>
 
                 <!-- Duration -->
                 <div class="form-group">
                     <label class="form-label">Duration</label>
                     <div class="duration-options">
-                        <div class="duration-option" data-value="Half Day">Half Day</div>
-                        <div class="duration-option selected" data-value="Full Day">Full Day</div>
-                        <div class="duration-option" data-value="Multiple Days">Multiple Days</div>
+                        <div class="duration-option" onclick="selectDuration('Half Day', this)">Half Day</div>
+                        <div class="duration-option selected" onclick="selectDuration('Full Day', this)">Full Day</div>
+                        <div class="duration-option" onclick="selectDuration('Multiple Days', this)">Multiple Days</div>
                     </div>
+                    <input type="hidden" name="duration" id="duration-hidden" value="Full Day" required>
                 </div>
 
                 <!-- Date Fields -->
                 <div class="form-group">
                     <label class="form-label">Start Date</label>
-                    <input type="date" name="start-date" class="form-input" required>
+                    <input type="date" name="start-date" id="start-date" class="form-input" required>
                 </div>
 
-                <div class="form-group" id="end-date-group" style="display: none;">
+                <div class="form-group" id="end-date-group">
                     <label class="form-label">End Date</label>
-                    <input type="date" class="form-input" id="end-date-input">
+                    <input type="date" name="end-date" id="end-date" class="form-input">
                 </div>
 
                 <!-- Reason -->
                 <div class="form-group">
                     <label class="form-label">Reason</label>
-                    <textarea name="reason" class="form-input form-textarea" placeholder="Write your reason here..."
-                        required></textarea>
+                    <textarea name="reason" class="form-input form-textarea" placeholder="Write your reason here..." required></textarea>
                 </div>
 
-                <!-- Hidden Fields -->
-                <div class="hidden-fields">
-                    <input type="hidden" name="leave-type" id="leave-type-input" required>
-                    <input type="hidden" name="duration" id="duration-input" value="Full Day" required>
-                    <input type="hidden" name="request-date" id="request-date">
-                    <input type="hidden" name="submission-time" id="submission-time">
-                </div>
+                <!-- Hidden Fields for Date/Time -->
+                <input type="hidden" name="request-date" id="request-date">
+                <input type="hidden" name="submission-time" id="submission-time">
 
                 <!-- reCAPTCHA -->
                 <div data-netlify-recaptcha="true" style="margin-bottom: 24px;"></div>
@@ -354,77 +324,69 @@
     </div>
 
     <script>
-        // Set current date and time
-        document.getElementById('request-date').value = new Date().toLocaleDateString('en-GB');
-        document.getElementById('submission-time').value = new Date().toLocaleString();
+        // Global variables
+        let selectedLeaveType = '';
+        let selectedDuration = 'Full Day';
 
-        // Set minimum date to today
-        const today = new Date().toISOString().split('T')[0];
-        const startDateInput = document.querySelector('input[name="start-date"]');
-        const endDateInput = document.querySelector('input[name="end-date"]');
-
-        startDateInput.value = today;
-        startDateInput.min = today;
-        endDateInput.min = today;
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date and time
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('start-date').value = today;
+            document.getElementById('start-date').min = today;
+            document.getElementById('end-date').min = today;
+            
+            // Set hidden fields
+            document.getElementById('request-date').value = new Date().toLocaleDateString('en-GB');
+            document.getElementById('submission-time').value = new Date().toLocaleString();
+        });
 
         // Leave type selection
-        const leaveOptions = document.querySelectorAll('.leave-option');
-        const leaveTypeInput = document.getElementById('leave-type-input');
-
-        leaveOptions.forEach(option => {
-            option.addEventListener('click', function () {
-                // Remove selected class from all options
-                leaveOptions.forEach(opt => opt.classList.remove('selected', 'sick', 'casual', 'earned', 'other'));
-
-                // Add selected class to clicked option
-                this.classList.add('selected');
-
-                // Add specific class based on leave type
-                const value = this.dataset.value;
-                if (value === 'Sick Leave') this.classList.add('sick');
-                else if (value === 'Casual Leave') this.classList.add('casual');
-                else if (value === 'Earned Leave') this.classList.add('earned');
-                else if (value === 'Other') this.classList.add('other');
-
-                // Set hidden input value
-                leaveTypeInput.value = value;
-            });
-        });
+        function selectLeaveType(leaveType, element) {
+            // Remove selected class from all leave options
+            document.querySelectorAll('.leave-option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Set global variable and hidden input
+            selectedLeaveType = leaveType;
+            document.getElementById('leave-type-hidden').value = leaveType;
+            
+            console.log('Selected leave type:', leaveType);
+        }
 
         // Duration selection
-        const durationOptions = document.querySelectorAll('.duration-option');
-        const durationInput = document.getElementById('duration-input');
-        const endDateGroup = document.getElementById('end-date-group');
-        const endDateInput = document.getElementById('end-date-input');
-
-        durationOptions.forEach(option => {
-            option.addEventListener('click', function () {
-                // Remove selected class from all options
-                durationOptions.forEach(opt => opt.classList.remove('selected'));
-
-                // Add selected class to clicked option
-                this.classList.add('selected');
-
-                // Set hidden input value
-                const value = this.dataset.value;
-                durationInput.value = value;
-
-                // Show/hide end date based on selection
-                if (value === 'Multiple Days') {
-                    endDateGroup.style.display = 'block';
-                    endDateInput.required = true;
-                    endDateInput.name = 'end-date'; // Enable field for submission
-                } else {
-                    endDateGroup.style.display = 'none';
-                    endDateInput.required = false;
-                    endDateInput.value = '';
-                    endDateInput.name = ''; // Disable field from submission
-                }
-            });
-        });
+        function selectDuration(duration, element) {
+            // Remove selected class from all duration options
+            document.querySelectorAll('.duration-option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Set global variable and hidden input
+            selectedDuration = duration;
+            document.getElementById('duration-hidden').value = duration;
+            
+            // Show/hide end date based on selection
+            const endDateGroup = document.getElementById('end-date-group');
+            const endDateInput = document.getElementById('end-date');
+            
+            if (duration === 'Multiple Days') {
+                endDateGroup.style.display = 'block';
+                endDateInput.required = true;
+            } else {
+                endDateGroup.style.display = 'none';
+                endDateInput.required = false;
+                endDateInput.value = '';
+            }
+            
+            console.log('Selected duration:', duration);
+        }
 
         // Update end date minimum when start date changes
-        startDateInput.addEventListener('change', function () {
+        document.getElementById('start-date').addEventListener('change', function() {
+            const endDateInput = document.getElementById('end-date');
             endDateInput.min = this.value;
             if (endDateInput.value && endDateInput.value < this.value) {
                 endDateInput.value = this.value;
@@ -432,96 +394,115 @@
         });
 
         // Form submission
-        document.getElementById('leaveForm').addEventListener('submit', function (e) {
+        document.getElementById('leaveForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
+            
             // Validate leave type selection
-            if (!leaveTypeInput.value) {
+            if (!selectedLeaveType) {
                 alert('Please select a leave type');
                 return;
             }
-
-            // Update all hidden fields with current values
+            
+            // Update hidden fields with current values
             const currentDate = new Date().toLocaleDateString('en-GB');
             const currentTime = new Date().toLocaleString();
-
+            
             document.getElementById('request-date').value = currentDate;
             document.getElementById('submission-time').value = currentTime;
-            document.getElementById('leave-type-input').value = leaveTypeInput.value;
-            document.getElementById('duration-input').value = durationInput.value;
-
-            // Create form data manually to ensure all fields are included
+            document.getElementById('leave-type-hidden').value = selectedLeaveType;
+            document.getElementById('duration-hidden').value = selectedDuration;
+            
+            // Create form data
             const formData = new FormData();
-
-            // Add all visible form fields
+            
+            // Add all form fields
             formData.append('form-name', 'leave-request');
             formData.append('employee-name', document.querySelector('input[name="employee-name"]').value);
             formData.append('employee-id', document.querySelector('input[name="employee-id"]').value);
-            formData.append('leave-type', leaveTypeInput.value);
-            formData.append('duration', durationInput.value);
-            formData.append('start-date', document.querySelector('input[name="start-date"]').value);
+            formData.append('leave-type', selectedLeaveType);
+            formData.append('duration', selectedDuration);
+            formData.append('start-date', document.getElementById('start-date').value);
             formData.append('reason', document.querySelector('textarea[name="reason"]').value);
             formData.append('request-date', currentDate);
             formData.append('submission-time', currentTime);
-
+            
             // Add end date only if Multiple Days is selected
-            if (durationInput.value === 'Multiple Days' && endDateInput.value) {
-                formData.append('end-date', endDateInput.value);
+            if (selectedDuration === 'Multiple Days') {
+                const endDate = document.getElementById('end-date').value;
+                if (endDate) {
+                    formData.append('end-date', endDate);
+                }
             }
-
+            
             const submitBtn = document.getElementById('submit-btn');
-
+            
             // Show loading state
             submitBtn.textContent = 'Submitting...';
             submitBtn.disabled = true;
-
+            
+            console.log('Submitting form with data:', {
+                'employee-name': document.querySelector('input[name="employee-name"]').value,
+                'employee-id': document.querySelector('input[name="employee-id"]').value,
+                'leave-type': selectedLeaveType,
+                'duration': selectedDuration,
+                'start-date': document.getElementById('start-date').value,
+                'reason': document.querySelector('textarea[name="reason"]').value,
+                'request-date': currentDate,
+                'submission-time': currentTime
+            });
+            
             // Submit form
             fetch('/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams(formData).toString()
             })
-                .then(() => {
-                    // Show success message
-                    document.getElementById('success-message').style.display = 'block';
-                    document.getElementById('error-message').style.display = 'none';
-
-                    // Reset form
-                    this.reset();
-
-                    // Reset selections
-                    leaveOptions.forEach(opt => opt.classList.remove('selected', 'sick', 'casual', 'earned', 'other'));
-                    durationOptions.forEach(opt => opt.classList.remove('selected'));
-                    durationOptions[1].classList.add('selected'); // Default to Full Day
-
-                    // Reset hidden inputs
-                    leaveTypeInput.value = '';
-                    durationInput.value = 'Full Day';
-
-                    // Reset dates
-                    startDateInput.value = today;
-                    endDateGroup.style.display = 'none';
-                    endDateInput.required = false;
-
-                    // Reset hidden fields
-                    document.getElementById('request-date').value = new Date().toLocaleDateString('en-GB');
-                    document.getElementById('submission-time').value = new Date().toLocaleString();
-
-                    // Scroll to top
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                })
-                .catch(() => {
-                    // Show error message
-                    document.getElementById('error-message').style.display = 'block';
-                    document.getElementById('success-message').style.display = 'none';
-                })
-                .finally(() => {
-                    // Reset button
-                    submitBtn.textContent = 'Apply for Leave →';
-                    submitBtn.disabled = false;
-                });
+            .then(() => {
+                // Show success message
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
+                
+                // Reset form
+                this.reset();
+                
+                // Reset selections
+                document.querySelectorAll('.leave-option').forEach(opt => opt.classList.remove('selected'));
+                document.querySelectorAll('.duration-option').forEach(opt => opt.classList.remove('selected'));
+                document.querySelectorAll('.duration-option')[1].classList.add('selected'); // Default to Full Day
+                
+                // Reset global variables
+                selectedLeaveType = '';
+                selectedDuration = 'Full Day';
+                
+                // Reset hidden inputs
+                document.getElementById('leave-type-hidden').value = '';
+                document.getElementById('duration-hidden').value = 'Full Day';
+                
+                // Reset dates
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('start-date').value = today;
+                document.getElementById('end-date-group').style.display = 'none';
+                document.getElementById('end-date').required = false;
+                
+                // Reset hidden fields
+                document.getElementById('request-date').value = new Date().toLocaleDateString('en-GB');
+                document.getElementById('submission-time').value = new Date().toLocaleString();
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            })
+            .catch((error) => {
+                console.error('Form submission error:', error);
+                // Show error message
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('success-message').style.display = 'none';
+            })
+            .finally(() => {
+                // Reset button
+                submitBtn.textContent = 'Apply for Leave →';
+                submitBtn.disabled = false;
+            });
         });
     </script>
 </body>
-
 </html>
