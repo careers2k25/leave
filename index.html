@@ -305,7 +305,6 @@
                             <span class="leave-text">Other</span>
                         </div>
                     </div>
-                    <input type="hidden" name="leave-type" id="leave-type-input" required>
                 </div>
 
                 <!-- Duration -->
@@ -316,7 +315,6 @@
                         <div class="duration-option selected" data-value="Full Day">Full Day</div>
                         <div class="duration-option" data-value="Multiple Days">Multiple Days</div>
                     </div>
-                    <input type="hidden" name="duration" id="duration-input" value="Full Day" required>
                 </div>
 
                 <!-- Date Fields -->
@@ -339,6 +337,8 @@
 
                 <!-- Hidden Fields -->
                 <div class="hidden-fields">
+                    <input type="hidden" name="leave-type" id="leave-type-input" required>
+                    <input type="hidden" name="duration" id="duration-input" value="Full Day" required>
                     <input type="hidden" name="request-date" id="request-date">
                     <input type="hidden" name="submission-time" id="submission-time">
                 </div>
