@@ -246,6 +246,19 @@
             <form name="leave-request" method="POST" data-netlify="true" data-netlify-recaptcha="true" id="leaveForm">
                 <input type="hidden" name="form-name" value="leave-request" />
                 
+                <!-- Hidden form fields for Netlify detection -->
+                <div style="display: none;">
+                    <input name="employee-name" />
+                    <input name="employee-id" />
+                    <input name="leave-type" />
+                    <input name="duration" />
+                    <input name="start-date" />
+                    <input name="end-date" />
+                    <textarea name="reason"></textarea>
+                    <input name="request-date" />
+                    <input name="submission-time" />
+                </div>
+                
                 <!-- Employee Information -->
                 <div class="form-group">
                     <label class="form-label">Employee Name</label>
